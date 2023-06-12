@@ -1,3 +1,4 @@
+const { hashPassword } = require("./auth");
 const database = require("./database");
 
 const movies = [
@@ -135,11 +136,11 @@ const postMovie = (req, res) => {
     });
 };
 const postUsers = (req, res) => {
-  const { id, firstname, lastname, email, city, language } = req.body;
+  const { id, firstname, lastname, email, city, language, hashedPassword } = req.body;
   database
     .query(
-      "INSERT INTO users(id, firstname, lastname, email, city, language)VALUES(?,?,?,?,?,?)",
-      [id, firstname, lastname, email, city, language]
+      "INSERT INTO users(id, firstname, lastname, email, city, language, hashedPassword)VALUES(?,?,?,?,?,?,?)",
+      [id, firstname, lastname, email, city, language, hashedPassword]
     )
     .then(([result]) => {
       res.location(`api/users/${result.insertId}`).sendStatus(201);
@@ -179,14 +180,15 @@ const updateMovie = (req, res) => {
 const updateUser = (req, res) => {
   const id = parseInt(req.params.id);
 
-  const { firstname, lastname, email, city, language } = req.body;
+  const { firstname, lastname, email, city, language, hashedPassword } =
+    req.body;
 
   database
 
     .query(
-      "update users set firstname = ?, lastname = ?, email = ?, city = ?, language=? where id = ?",
+      "update users set firstname = ?, lastname = ?, email = ?, city = ?, language=?, hashedPassword =?, where id = ?",
 
-      [firstname, lastname, email, city, language, id]
+      [firstname, lastname, email, city, language, hashPassword, id]
     )
 
     .then(([result]) => {
